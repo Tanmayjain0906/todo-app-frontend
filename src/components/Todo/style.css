@@ -148,3 +148,47 @@ td:nth-child(1) input {
     outline: none;
     font-family: 'Montserrat', sans-serif;
 }
+
+.button-container {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    width: 190px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.main-button {
+    padding: 10px 20px;
+    background-color: #614487;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 5px; /* Adjust to give space for the sliding buttons */
+    width: 190px;
+}
+
+.extra-buttons {
+    position: absolute;
+    bottom: 100%; /* Position above the main button */
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    overflow: hidden;
+    width: 190px;
+}
+
+.sub-button {
+    padding: 10px 20px;
+    background-color: #F3625F;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    margin-top: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    width: 190px;
+}

@@ -1,15 +1,16 @@
-import React, {useContext, useState } from 'react';
+import React, {useState } from 'react';
 import { Link, useNavigate} from 'react-router-dom';
 import './form.css';
 import axios from 'axios';
-import todoContext from '../../context/todoContext';
+import Loader from '../Loader';
+
 
 const Login = () => {
     const [emailOrUsername, setEmailOrUsername] = useState("");
     const [password, setPassword] = useState("");
-
+    const [loading, setLoading] = useState(false);
     
-    const url = useContext(todoContext)
+    // const url = useContext(todoContext)
     const navigate = useNavigate();
 
     async function handleForm (event) {
@@ -22,12 +23,15 @@ const Login = () => {
         else {
            try
            {
+            setLoading(true);
              const obj = {
                 loginId: emailOrUsername,
                 password: password,
              }
 
-             const response = await axios.post(`${url}/login`, obj, { withCredentials: true });
+             const response = await axios.post("/login", obj);
+             
+             setLoading(false);
 
              if(response.status !== 200)
              {
@@ -42,8 +46,16 @@ const Login = () => {
            catch(err)
            {
              alert(err.response.data.message);
+             setLoading(false);
            }
         }
+    }
+
+    if(loading)
+    {
+        return(
+            <Loader />
+        )
     }
 
     return (

@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, {useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './form.css';
 import axios from 'axios';
+import Loader from '../Loader';
 
 
 const Signup = () => {
@@ -10,6 +11,8 @@ const Signup = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [cPassword, setCPassword] = useState("");
+    const [loading, setLoading] = useState(false);
+
     const navigate = useNavigate();
 
 
@@ -17,26 +20,45 @@ const Signup = () => {
     async function handleForm(event) {
         event.preventDefault();
 
-        // if (!name || !email || !password || !cPassword) {
-        //     alert("Please Fill all the fields");
-        //     return;
-        // }
-        // else if (password !== cPassword) {
-        //     alert("Paswword doesn't match");
-        //     return;
-        // }
-        // else {
-        //     try {
-        //         const response = await axios.get("/register");
-        //         console.log(response)
-        //     }
-        //     catch (err) {
-        //         console.log(err);
-        //     }
-        // }
+        if (!name || !email || !password || !cPassword || !username) {
+            alert("Please Fill all the fields");
+            return;
+        }
+        else if (password !== cPassword) {
+            alert("Paswword doesn't match");
+            return;
+        }
+        else {
+            const obj = { name, email, password, username };
+            try {
+                setLoading(true);
+                const response = await axios.post("/register", obj);
+                setLoading(false);
+                if (response.status !== 201) {
+                    alert(response.data.message);
+                    return;
+                }
+                alert(response.data.message);
+                navigate("/login");
+                setName("");
+                setEmail("");
+                setPassword("");
+                setCPassword("");
+                setUsername("");
+            }
+            catch (err) {
+                alert(err.response.data.message);
+                setLoading(false);
+            }
+        }
 
-        console.log(name, email, password, cPassword, username);
+    }
 
+    if(loading)
+    {
+        return(
+            <Loader />
+        )
     }
 
     return (
