@@ -26,6 +26,7 @@ function Todo() {
     {
       try{
           const response = await axios.get(`${url}/read-all-todos`, { withCredentials: true });
+          console.log(response.data);
           console.log(response);
       }
       catch(err)
