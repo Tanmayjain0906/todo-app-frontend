@@ -207,7 +207,7 @@ function Todo() {
                             <tbody>
                                 {
                                     todoArr.map((item, i) => (
-                                        <Tr editId={editId} item={item} editText={editText} setEditText={setEditText} handleEditUpdate={handleEditUpdate} handleEdit={handleEdit} handleDelete={handleDelete} key={i} index={i} />
+                                        <Tr editId={editId} item={item} editText={editText} setEditText={setEditText} handleEditUpdate={handleEditUpdate} handleEdit={handleEdit} handleDelete={handleDelete} fetchAllTodos={fetchAllTodos}key={i} index={i} />
                                     ))
                                 }
 
