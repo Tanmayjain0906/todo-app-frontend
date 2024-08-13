@@ -29,8 +29,8 @@ const Login = () => {
                 password: password,
              }
 
-             const response = await axios.post("/login", obj);
-             
+             const response = await axios.post("https://todo-app-backend-pjs8.onrender.com/login", obj);
+             console.log(response);
              setLoading(false);
 
              if(response.status !== 200)
@@ -45,7 +45,8 @@ const Login = () => {
            }
            catch(err)
            {
-             alert(err.response.data.message);
+            console.log(err);
+            //  alert(err.response.data.message);
              setLoading(false);
            }
         }
