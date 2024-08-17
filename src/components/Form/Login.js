@@ -29,7 +29,7 @@ const Login = () => {
                 password: password,
              }
 
-             const response = await axios.post("https://todo-app-backend-pjs8.onrender.com/login", obj);
+             const response = await axios.post("https://todo-app-backend-pjs8.onrender.com/login", obj, {withCredentials: true});
              console.log(response);
              setLoading(false);
 
