@@ -22,7 +22,7 @@ function Todo() {
         const authenticate = async () => {
             try {
                 setLoading(true);
-                const response = await axios.get("https://todo-app-backend-pjs8.onrender.com/authentication");
+                const response = await axios.get("https://todo-app-backend-pjs8.onrender.com/authentication", {withCredentials: true});
                 const isAuth = response.data.isAuth;
                 if (!isAuth) {
                     alert("Please Login or Signup First");
@@ -45,7 +45,7 @@ function Todo() {
 
     async function fetchAllTodos() {
         try {
-            const response = await axios.get("https://todo-app-backend-pjs8.onrender.com/read-all-todos");
+            const response = await axios.get("https://todo-app-backend-pjs8.onrender.com/read-all-todos", {withCredentials: true});
             setTodoArr(response.data.data);
         }
         catch (err) {
