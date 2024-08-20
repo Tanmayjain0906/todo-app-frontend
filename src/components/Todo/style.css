@@ -90,7 +90,7 @@
     margin-left: auto;
     margin-right: auto;
     width: 90%;
-    height: calc(85vh - 7rem);
+    height: calc(80vh - 7rem);
     text-align: center;
 }
 
@@ -156,6 +156,7 @@ td:nth-child(1) input {
     width: 190px;
     left: 50%;
     transform: translateX(-50%);
+    bottom: 0.5rem;
 }
 
 .main-button {

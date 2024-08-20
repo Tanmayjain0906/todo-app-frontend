@@ -6,6 +6,10 @@ import Tr from '../Tr';
 import { useNavigate } from 'react-router-dom';
 import Loader from '../Loader';
 
+import PaginationComponent from '../Pagination';
+
+
+let SKIP = 0;
 
 function Todo() {
 
@@ -15,38 +19,43 @@ function Todo() {
     const [editText, setEditText] = useState("");
     const [show, setShow] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
 
     const navigate = useNavigate();
 
     useEffect(() => {
-        const authenticate = async () => {
-            try {
-                setLoading(true);
-                const response = await axios.get("https://todo-app-backend-pjs8.onrender.com/authentication");
-                const isAuth = response.data.isAuth;
-                if (!isAuth) {
-                    alert("Please Login or Signup First");
-                    navigate("/");
-                } else {
-                    setLoading(false);
-                    fetchAllTodos();
-                }
-            } catch (err) {
-                console.error("Error during authentication:", err);
-                alert(err.response.data.message);
-                setLoading(false);
-                navigate("/");
-            }
-        };
+       fetchAllTodos();
 
-        authenticate();
-        
     }, [])
 
     async function fetchAllTodos() {
+        const token = localStorage.getItem("token");
+        setLoading(true);
+        if(!token)
+        {
+            alert("Please Login or Signup First");
+            navigate("/login");
+            return;
+        }
         try {
-            const response = await axios.get("https://todo-app-backend-pjs8.onrender.com/read-all-todos");
-            setTodoArr(response.data.data);
+            const response = await axios.get(`/read-all-todos?skip=${SKIP}`, {headers: {Authorization: `Bearer ${token}`}});
+            setLoading(false);
+            const totalTodo = Math.ceil(response.data.totalTodos / 5);
+            setTotalPages(totalTodo);
+            if (response.data.data.length == 0 && SKIP > 0) {
+                SKIP -= 5;
+                setPage(page - 1);
+                setLoading(true);
+                const updatedResponse = await axios.get(`/read-all-todos?skip=${SKIP}`);
+                setLoading(false);
+                setTodoArr(updatedResponse.data.data);
+            }
+            else
+            {
+                setTodoArr(response.data.data);
+            }
+            
         }
         catch (err) {
             alert(err.response.data.message);
@@ -65,14 +74,17 @@ function Todo() {
                 const response = await axios.post("/create-todo", obj);
                 if (response.status !== 201) {
                     alert(response.data.message);
+                    return;
                 }
+
                 fetchAllTodos();
+                setTodo("");
             }
             catch (err) {
                 alert(err.response.data.message);
             }
         }
-        setTodo("");
+        
     }
 
     function handleEdit(item) {
@@ -91,6 +103,7 @@ function Todo() {
             const response = await axios.post("/edit-todo", obj);
             if (response.status !== 200) {
                 alert(response.data.message);
+                return
             }
             fetchAllTodos();
         }
@@ -110,9 +123,14 @@ function Todo() {
         }
         try {
             const response = await axios.post("/delete-todo", obj);
-            console.log(response);
             if (response.status !== 200) {
                 alert(response.data.message);
+                return;
+            }
+
+            if (editId === item._id) {
+                setEditId("");
+                setEditText("");
             }
             fetchAllTodos();
         }
@@ -154,9 +172,15 @@ function Todo() {
     }
 
 
-    if(loading)
-    {
-        return(
+    function handlePageChange(e, value) {
+        SKIP = (value - 1) * 5;
+        setPage(value);
+        fetchAllTodos();
+    }
+
+
+    if (loading) {
+        return (
             <Loader />
         )
     }
@@ -207,7 +231,7 @@ function Todo() {
                             <tbody>
                                 {
                                     todoArr.map((item, i) => (
-                                        <Tr editId={editId} item={item} editText={editText} setEditText={setEditText} handleEditUpdate={handleEditUpdate} handleEdit={handleEdit} handleDelete={handleDelete} fetchAllTodos={fetchAllTodos}key={i} index={i} />
+                                        <Tr editId={editId} item={item} editText={editText} setEditText={setEditText} handleEditUpdate={handleEditUpdate} handleEdit={handleEdit} handleDelete={handleDelete} fetchAllTodos={fetchAllTodos} key={item._id} index={i} />
                                     ))
                                 }
 
@@ -218,6 +242,15 @@ function Todo() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 1 }}>Empty</motion.h1></div>
             }
+
+            {
+                totalPages > 1 && <motion.div className='pagination' initial={{ opacity: 0, x: -50 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 1 }}>
+                    <PaginationComponent page={page} handlePageChange={handlePageChange} totalPages={totalPages} />
+                </motion.div>
+            }
+
 
 
             <div className="button-container">

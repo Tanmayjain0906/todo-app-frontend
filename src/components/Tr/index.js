@@ -11,8 +11,10 @@ function Tr({ editId, item, editText, setEditText, handleEditUpdate, handleEdit,
     const [status, setStatus] = useState(item.status);
     const intervalRef = useRef(null); // Using useRef to store the interval ID
 
+
     useEffect(() => {
-        if (status === "Ongoing") {
+        console.log("reload");
+        if (item.status === "Ongoing") {
             const startTime = new Date(item.startTime);
             const currentTime = Date.now();
             const elapsedTime = currentTime - startTime.getTime();
