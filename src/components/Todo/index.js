@@ -25,8 +25,28 @@ function Todo() {
     const navigate = useNavigate();
 
     useEffect(() => {
-       fetchAllTodos();
+        const authenticate = async () => {
+            try {
+                setLoading(true);
+                const response = await axios.get("https://todo-app-backend-pjs8.onrender.com/authentication", {withCredentials: true});
+                const isAuth = response.data.isAuth;
+                if (!isAuth) {
+                    alert("Please Login or Signup First");
+                    navigate("/");
+                } else {
+                    setLoading(false);
+                    fetchAllTodos();
+                }
+            } catch (err) {
+                console.error("Error during authentication:", err);
+                alert(err.response.data.message);
+                setLoading(false);
+                navigate("/");
+            }
+        };
 
+        authenticate();
+        
     }, [])
 
     async function fetchAllTodos() {
@@ -39,23 +59,8 @@ function Todo() {
             return;
         }
         try {
-            const response = await axios.get(`/read-all-todos?skip=${SKIP}`, {headers: {Authorization: `Bearer ${token}`}});
-            setLoading(false);
-            const totalTodo = Math.ceil(response.data.totalTodos / 5);
-            setTotalPages(totalTodo);
-            if (response.data.data.length == 0 && SKIP > 0) {
-                SKIP -= 5;
-                setPage(page - 1);
-                setLoading(true);
-                const updatedResponse = await axios.get(`/read-all-todos?skip=${SKIP}`);
-                setLoading(false);
-                setTodoArr(updatedResponse.data.data);
-            }
-            else
-            {
-                setTodoArr(response.data.data);
-            }
-            
+            const response = await axios.get("https://todo-app-backend-pjs8.onrender.com/read-all-todos", {withCredentials: true});
+            setTodoArr(response.data.data);
         }
         catch (err) {
             alert(err.response.data.message);
