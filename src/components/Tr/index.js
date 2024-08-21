@@ -14,7 +14,6 @@ function Tr({ editId, item, editText, setEditText, handleEditUpdate, handleEdit,
     const navigate = useNavigate();
 
     useEffect(() => {
-        console.log("reload");
         if (item.status === "Ongoing") {
             const startTime = new Date(item.startTime);
             const currentTime = Date.now();
