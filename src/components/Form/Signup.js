@@ -32,7 +32,7 @@ const Signup = () => {
             const obj = { name, email, password, username };
             try {
                 setLoading(true);
-                const response = await axios.post("/register", obj);
+                const response = await axios.post("https://todo-app-backend-pjs8.onrender.com/register", obj);
                 setLoading(false);
                 if (response.status !== 201) {
                     alert(response.data.message);

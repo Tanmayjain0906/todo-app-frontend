@@ -56,7 +56,7 @@ function Tr({ editId, item, editText, setEditText, handleEditUpdate, handleEdit,
         }
         try {
             const obj = { id: item._id };
-            const response = await axios.post(`/todo-start`, obj, { headers: { Authorization: `Bearer ${token}` }, withCredentials: true });
+            const response = await axios.post(`https://todo-app-backend-pjs8.onrender.com/todo-start`, obj, { headers: { Authorization: `Bearer ${token}` }, withCredentials: true });
             setStatus(response.data.data.status);
             setDuration(0);  // Reset duration to 0 on start
             startTimer(); // Start the timer immediately after setting the status
@@ -75,7 +75,7 @@ function Tr({ editId, item, editText, setEditText, handleEditUpdate, handleEdit,
         }
         try {
             const obj = { id: item._id };
-            const response = await axios.post(`/todo-pause`, obj, { headers: { Authorization: `Bearer ${token}` }, withCredentials: true });
+            const response = await axios.post(`https://todo-app-backend-pjs8.onrender.com/todo-pause`, obj, { headers: { Authorization: `Bearer ${token}` }, withCredentials: true });
             setStatus(response.data.data.status);
             stopTimer();
             fetchAllTodos();
@@ -93,7 +93,7 @@ function Tr({ editId, item, editText, setEditText, handleEditUpdate, handleEdit,
         }
         try {
             const obj = { id: item._id };
-            const response = await axios.post(`/todo-resume`, obj, { headers: { Authorization: `Bearer ${token}` }, withCredentials: true });
+            const response = await axios.post(`https://todo-app-backend-pjs8.onrender.com/todo-resume`, obj, { headers: { Authorization: `Bearer ${token}` }, withCredentials: true });
             setStatus(response.data.data.status);
             startTimer();
             fetchAllTodos();
@@ -111,7 +111,7 @@ function Tr({ editId, item, editText, setEditText, handleEditUpdate, handleEdit,
         }
         try {
             const obj = { id: item._id };
-            const response = await axios.post(`/todo-end`, obj, { headers: { Authorization: `Bearer ${token}` }, withCredentials: true });
+            const response = await axios.post(`https://todo-app-backend-pjs8.onrender.com/todo-end`, obj, { headers: { Authorization: `Bearer ${token}` }, withCredentials: true });
             setStatus(response.data.data.status);
             stopTimer();
             fetchAllTodos();

@@ -28,7 +28,7 @@ const Login = () => {
                     password: password,
                 }
 
-                const response = await axios.post("/login", obj, { withCredentials: true });
+                const response = await axios.post("https://todo-app-backend-pjs8.onrender.com/login", obj, { withCredentials: true });
                 localStorage.setItem("token", response.data.token);
                 setLoading(false);
 

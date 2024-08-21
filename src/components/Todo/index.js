@@ -48,13 +48,13 @@ function Todo() {
         }
         let response
         try {
-            response = await axios.get(`/read-all-todos?skip=${SKIP}`, { headers: { Authorization: `Bearer ${token}` }, withCredentials: true });
+            response = await axios.get(`https://todo-app-backend-pjs8.onrender.com/read-all-todos?skip=${SKIP}`, { headers: { Authorization: `Bearer ${token}` }, withCredentials: true });
             let total = response.data.totalTodos;
 
             if (response.data.data.length === 0 && SKIP > 0 && total > 0) {
                 SKIP -= 5;
                 setPage(page-1);
-                response = await axios.get(`/read-all-todos?skip=${SKIP}`, { headers: { Authorization: `Bearer ${token}` }, withCredentials: true });
+                response = await axios.get(`https://todo-app-backend-pjs8.onrender.com/read-all-todos?skip=${SKIP}`, { headers: { Authorization: `Bearer ${token}` }, withCredentials: true });
             }
 
             total = Math.ceil(total/5);
@@ -85,7 +85,7 @@ function Todo() {
             }
             const obj = { todo };
             try {
-                const response = await axios.post("/create-todo", obj, { headers: { Authorization: `Bearer ${token}` }, withCredentials: true });
+                const response = await axios.post("https://todo-app-backend-pjs8.onrender.com/create-todo", obj, { headers: { Authorization: `Bearer ${token}` }, withCredentials: true });
                 if (response.status !== 201) {
                     alert(response.data.message);
                     return;
@@ -123,7 +123,7 @@ function Todo() {
         }
 
         try {
-            const response = await axios.post("/edit-todo", obj, { headers: { Authorization: `Bearer ${token}` }, withCredentials: true });
+            const response = await axios.post("https://todo-app-backend-pjs8.onrender.com/edit-todo", obj, { headers: { Authorization: `Bearer ${token}` }, withCredentials: true });
             if (response.status !== 200) {
                 alert(response.data.message);
                 return
@@ -153,7 +153,7 @@ function Todo() {
             return;
         }
         try {
-            const response = await axios.post("/delete-todo", obj, { headers: { Authorization: `Bearer ${token}` }, withCredentials: true });
+            const response = await axios.post("https://todo-app-backend-pjs8.onrender.com/delete-todo", obj, { headers: { Authorization: `Bearer ${token}` }, withCredentials: true });
             if (response.status !== 200) {
                 alert(response.data.message);
                 return;
@@ -184,7 +184,7 @@ function Todo() {
         }
         try {
             setLoading(true);
-            const response = await axios.get("/logout", { headers: { Authorization: `Bearer ${token}` }, withCredentials: true });
+            const response = await axios.get("https://todo-app-backend-pjs8.onrender.com/logout", { headers: { Authorization: `Bearer ${token}` }, withCredentials: true });
             alert(response.data.message);
             setLoading(false);
             localStorage.removeItem("token");
