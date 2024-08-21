@@ -17,7 +17,7 @@ function Todo() {
     const [todoArr, setTodoArr] = useState([]);
     const [editId, setEditId] = useState("");
     const [editText, setEditText] = useState("");
-    const [show, setShow] = useState(false);
+    // const [show, setShow] = useState(false);
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
@@ -25,45 +25,48 @@ function Todo() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const authenticate = async () => {
-            try {
-                setLoading(true);
-                const response = await axios.get("https://todo-app-backend-pjs8.onrender.com/authentication", {withCredentials: true});
-                const isAuth = response.data.isAuth;
-                if (!isAuth) {
-                    alert("Please Login or Signup First");
-                    navigate("/");
-                } else {
-                    setLoading(false);
-                    fetchAllTodos();
-                }
-            } catch (err) {
-                console.error("Error during authentication:", err);
-                alert(err.response.data.message);
-                setLoading(false);
-                navigate("/");
-            }
-        };
-
-        authenticate();
-        
+        fetchAllTodos();
     }, [])
 
-    async function fetchAllTodos() {
+    function getToken() {
         const token = localStorage.getItem("token");
-        setLoading(true);
-        if(!token)
+        if (!token)
         {
-            alert("Please Login or Signup First");
+            setLoading(true);
+            return false;
+        }
+        return token;
+    }
+
+    async function fetchAllTodos() {
+        const token = getToken();
+        if (!token) {
+            setLoading(true);
+            alert("Please Login Or Signup First");
             navigate("/login");
             return;
         }
+        let response
         try {
-            const response = await axios.get("https://todo-app-backend-pjs8.onrender.com/read-all-todos", {withCredentials: true});
+            response = await axios.get(`/read-all-todos?skip=${SKIP}`, { headers: { Authorization: `Bearer ${token}` }, withCredentials: true });
+            let total = response.data.totalTodos;
+
+            if (response.data.data.length === 0 && SKIP > 0 && total > 0) {
+                SKIP -= 5;
+                setPage(page-1);
+                response = await axios.get(`/read-all-todos?skip=${SKIP}`, { headers: { Authorization: `Bearer ${token}` }, withCredentials: true });
+            }
+
+            total = Math.ceil(total/5);
+            setTotalPages(total);
             setTodoArr(response.data.data);
+
+            setLoading(false);
         }
         catch (err) {
+            console.log(err);
             alert(err.response.data.message);
+            navigate("/login");
         }
     }
 
@@ -74,9 +77,16 @@ function Todo() {
             alert("Please Enter Todo First");
         }
         else {
+            const token = getToken();
+            if (!token) {
+                setLoading(true);
+                alert("Please Login Or Signup First");
+                navigate("/login");
+                return;
+            }
             const obj = { todo };
             try {
-                const response = await axios.post("/create-todo", obj);
+                const response = await axios.post("/create-todo", obj, { headers: { Authorization: `Bearer ${token}` }, withCredentials: true });
                 if (response.status !== 201) {
                     alert(response.data.message);
                     return;
@@ -86,10 +96,11 @@ function Todo() {
                 setTodo("");
             }
             catch (err) {
+                console.log(err);
                 alert(err.response.data.message);
             }
         }
-        
+
     }
 
     function handleEdit(item) {
@@ -104,8 +115,16 @@ function Todo() {
             newTodo: editText,
         }
 
+        const token = getToken();
+        if (!token) {
+            setLoading(true);
+            alert("Please Login Or Signup First");
+            navigate("/login");
+            return;
+        }
+
         try {
-            const response = await axios.post("/edit-todo", obj);
+            const response = await axios.post("/edit-todo", obj, { headers: { Authorization: `Bearer ${token}` }, withCredentials: true });
             if (response.status !== 200) {
                 alert(response.data.message);
                 return
@@ -126,8 +145,16 @@ function Todo() {
         const obj = {
             deleteId: item._id
         }
+
+        const token = getToken();
+        if (!token) {
+            setLoading(true);
+            alert("Please Login Or Signup First");
+            navigate("/login");
+            return;
+        }
         try {
-            const response = await axios.post("/delete-todo", obj);
+            const response = await axios.post("/delete-todo", obj, { headers: { Authorization: `Bearer ${token}` }, withCredentials: true });
             if (response.status !== 200) {
                 alert(response.data.message);
                 return;
@@ -144,16 +171,24 @@ function Todo() {
         }
     }
 
-    function handleToogle() {
-        setShow(!show);
-    }
+    // function handleToogle() {
+    //     setShow(!show);
+    // }
 
     async function handleLogout() {
+        const token = getToken();
+        if (!token) {
+            setLoading(true);
+            alert("Please Login Or Signup First");
+            navigate("/login");
+            return;
+        }
         try {
             setLoading(true);
-            const response = await axios.get("/logout");
+            const response = await axios.get("/logout", { headers: { Authorization: `Bearer ${token}` }, withCredentials: true });
             alert(response.data.message);
             setLoading(false);
+            localStorage.removeItem("token");
         }
         catch (err) {
             alert(err.response.data.message);
@@ -162,19 +197,25 @@ function Todo() {
         navigate("/");
     }
 
-    async function handleLogoutFromAllDevices() {
-        try {
-            setLoading(true);
-            const response = await axios.get("/logout-from-all-devices");
-            alert(response.data.message);
-            setLoading(false);
-        }
-        catch (err) {
-            alert(err.response.data.message);
-            setLoading(false);
-        }
-        navigate("/");
-    }
+    // async function handleLogoutFromAllDevices() {
+    //     const token = getToken();
+    //     if (!token) {
+    //         alert("Please Login Or Signup First");
+    //         navigate("/login");
+    //         return;
+    //     }
+    //     try {
+    //         setLoading(true);
+    //         const response = await axios.get("/logout-from-all-devices");
+    //         alert(response.data.message);
+    //         setLoading(false);
+    //     }
+    //     catch (err) {
+    //         alert(err.response.data.message);
+    //         setLoading(false);
+    //     }
+    //     navigate("/");
+    // }
 
 
     function handlePageChange(e, value) {
@@ -257,7 +298,7 @@ function Todo() {
             }
 
 
-
+            {/* 
             <div className="button-container">
                 <button className="main-button" onClick={handleToogle}>
                     Logout
@@ -292,7 +333,16 @@ function Todo() {
                         </motion.div>
                     )}
                 </AnimatePresence>
-            </div>
+            </div> */}
+
+
+            <motion.div className="button-container" initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1 }}>
+                <button className="main-button" onClick={handleLogout}>
+                    Logout
+                </button>
+            </motion.div>
 
         </div>
     )

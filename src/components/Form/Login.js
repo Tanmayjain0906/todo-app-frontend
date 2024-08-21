@@ -1,5 +1,5 @@
-import React, {useState } from 'react';
-import { Link, useNavigate} from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import './form.css';
 import axios from 'axios';
 import Loader from '../Loader';
@@ -9,11 +9,11 @@ const Login = () => {
     const [emailOrUsername, setEmailOrUsername] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
-    
+
     // const url = useContext(todoContext)
     const navigate = useNavigate();
 
-    async function handleForm (event) {
+    async function handleForm(event) {
         event.preventDefault();
 
         if (!emailOrUsername || !password) {
@@ -21,41 +21,35 @@ const Login = () => {
             return;
         }
         else {
-           try
-           {
-            setLoading(true);
-             const obj = {
-                loginId: emailOrUsername,
-                password: password,
-             }
+            try {
+                setLoading(true);
+                const obj = {
+                    loginId: emailOrUsername,
+                    password: password,
+                }
 
-             const response = await axios.post("https://todo-app-backend-pjs8.onrender.com/login", obj, {withCredentials: true});
-             console.log(response);
-             localStorage.setItem("token", response.data.token);
-             setLoading(false);
+                const response = await axios.post("/login", obj, { withCredentials: true });
+                localStorage.setItem("token", response.data.token);
+                setLoading(false);
 
-             if(response.status !== 200)
-             {
-                alert(response.data.message);
-                return;
-             }
-             setEmailOrUsername("");
-             setPassword("");
-             navigate("/dashboard");
+                if (response.status !== 200) {
+                    alert(response.data.message);
+                    return;
+                }
+                setEmailOrUsername("");
+                setPassword("");
+                navigate("/dashboard");
 
-           }
-           catch(err)
-           {
-            console.log(err);
-            //  alert(err.response.data.message);
-             setLoading(false);
-           }
+            }
+            catch (err) {
+                alert(err.response.data.message);
+                setLoading(false);
+            }
         }
     }
 
-    if(loading)
-    {
-        return(
+    if (loading) {
+        return (
             <Loader />
         )
     }

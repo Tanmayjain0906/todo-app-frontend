@@ -5,12 +5,13 @@ import { FaSave } from "react-icons/fa";
 import { motion } from 'framer-motion';
 import "./style.css";
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 function Tr({ editId, item, editText, setEditText, handleEditUpdate, handleEdit, index, handleDelete, fetchAllTodos }) {
     const [duration, setDuration] = useState(item.elapsedTime || 0);
     const [status, setStatus] = useState(item.status);
     const intervalRef = useRef(null); // Using useRef to store the interval ID
-
+    const navigate = useNavigate();
 
     useEffect(() => {
         console.log("reload");
@@ -27,6 +28,12 @@ function Tr({ editId, item, editText, setEditText, handleEditUpdate, handleEdit,
         return () => stopTimer(); // Clear interval on component unmount
     }, []);
 
+    function getToken() {
+        const token = localStorage.getItem("token");
+        if (!token) return false;
+        return token;
+    }
+
     const startTimer = () => {
         if (intervalRef.current) return; // Prevent multiple intervals
         intervalRef.current = setInterval(() => {
@@ -42,9 +49,15 @@ function Tr({ editId, item, editText, setEditText, handleEditUpdate, handleEdit,
     };
 
     const handleStart = async () => {
+        const token = getToken();
+        if (!token) {
+            alert("Please Login Or Signup First");
+            navigate("/login");
+            return;
+        }
         try {
             const obj = { id: item._id };
-            const response = await axios.post(`/todo-start`, obj);
+            const response = await axios.post(`/todo-start`, obj, { headers: { Authorization: `Bearer ${token}` }, withCredentials: true });
             setStatus(response.data.data.status);
             setDuration(0);  // Reset duration to 0 on start
             startTimer(); // Start the timer immediately after setting the status
@@ -55,9 +68,15 @@ function Tr({ editId, item, editText, setEditText, handleEditUpdate, handleEdit,
     };
 
     const handlePause = async () => {
+        const token = getToken();
+        if (!token) {
+            alert("Please Login Or Signup First");
+            navigate("/login");
+            return;
+        }
         try {
             const obj = { id: item._id };
-            const response = await axios.post(`/todo-pause`, obj);
+            const response = await axios.post(`/todo-pause`, obj, { headers: { Authorization: `Bearer ${token}` }, withCredentials: true });
             setStatus(response.data.data.status);
             stopTimer();
             fetchAllTodos();
@@ -67,9 +86,15 @@ function Tr({ editId, item, editText, setEditText, handleEditUpdate, handleEdit,
     };
 
     const handleResume = async () => {
+        const token = getToken();
+        if (!token) {
+            alert("Please Login Or Signup First");
+            navigate("/login");
+            return;
+        }
         try {
             const obj = { id: item._id };
-            const response = await axios.post(`/todo-resume`, obj);
+            const response = await axios.post(`/todo-resume`, obj, { headers: { Authorization: `Bearer ${token}` }, withCredentials: true });
             setStatus(response.data.data.status);
             startTimer();
             fetchAllTodos();
@@ -79,9 +104,15 @@ function Tr({ editId, item, editText, setEditText, handleEditUpdate, handleEdit,
     };
 
     const handleEnd = async () => {
+        const token = getToken();
+        if (!token) {
+            alert("Please Login Or Signup First");
+            navigate("/login");
+            return;
+        }
         try {
             const obj = { id: item._id };
-            const response = await axios.post(`/todo-end`, obj);
+            const response = await axios.post(`/todo-end`, obj, { headers: { Authorization: `Bearer ${token}` }, withCredentials: true });
             setStatus(response.data.data.status);
             stopTimer();
             fetchAllTodos();
