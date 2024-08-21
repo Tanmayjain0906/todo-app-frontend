@@ -30,9 +30,10 @@ function Todo() {
 
     function getToken() {
         const token = localStorage.getItem("token");
+        setLoading(true);
         if (!token)
         {
-            setLoading(true);
+            
             return false;
         }
         return token;
